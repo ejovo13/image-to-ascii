@@ -1,5 +1,5 @@
 [package]
-name = "im2as"
+name = "img2ascii"
 description = "Convert images to colored ascii art."
 version = "0.1.0"
 edition = "2021"

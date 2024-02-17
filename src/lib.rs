@@ -1,10 +1,8 @@
 mod cli;
 
+pub use cli::Args;
 use image::{imageops::FilterType, DynamicImage, GenericImageView, ImageResult, Pixel};
 use owo_colors::OwoColorize;
-use std::error::Error;
-pub use cli::Args;
-
 
 fn pixel_to_color(pixel: image::Rgba<u8>) -> owo_colors::Rgb {
     let data = pixel.0;
@@ -98,7 +96,7 @@ pub fn print_image_with_ramp(
     contrast: f32,
     character_ramp: &str,
     filter_type: FilterType,
-    drop: Option<String>
+    drop: Option<String>,
 ) -> ImageResult<()> {
     let img = read_image_to_print(img_path, width, contrast, filter_type)?;
     let ramp = CharacterRamp::new(character_ramp);
@@ -109,16 +107,12 @@ pub fn print_image_with_ramp(
                 let color = pixel_to_color(p);
                 let c = ramp.get_char(p);
                 // Replace our character with a space if we need to drop it
-                let c = if s.contains(c) {
-                    ' '
-                } else {
-                    c
-                };
+                let c = if s.contains(c) { ' ' } else { c };
 
                 format!("{}", c.color(color).bold())
             };
             print_image(img, pixel_callback)
-        },
+        }
         None => {
             let pixel_callback = |p: image::Rgba<u8>| {
                 let color = pixel_to_color(p);

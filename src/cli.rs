@@ -1,6 +1,6 @@
-use serde::Serialize;
 use clap::{Parser, ValueEnum};
 use image::imageops::FilterType;
+use serde::Serialize;
 
 #[derive(ValueEnum, Clone, Default, Debug, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -12,7 +12,6 @@ enum ClapFilter {
     Nearest,
     /// Classic guassian kernel. Distorts the original colors in the image
     Gaussian,
-
 }
 
 impl ClapFilter {
@@ -21,11 +20,10 @@ impl ClapFilter {
         match self {
             ClapFilter::Linear => FilterType::Triangle,
             ClapFilter::Nearest => FilterType::Nearest,
-            ClapFilter::Gaussian => FilterType::Gaussian
+            ClapFilter::Gaussian => FilterType::Gaussian,
         }
     }
 }
-
 
 #[derive(Parser)]
 #[command(author = "Evan Voyles")]
@@ -61,9 +59,8 @@ pub struct Args {
     ///
     /// Ex: image_to_ascii ./image.png --drop="$"
     #[arg(long)]
-    drop: Option<String>
+    drop: Option<String>,
 }
-
 
 /* -------------------------------------------------------------------------- */
 /*                             Default parameters                             */
@@ -74,7 +71,6 @@ const DEFAULT_CONTRAST: f32 = 50.0;
 const DEFAULT_WIDTH: u32 = 80;
 
 impl Args {
-
     pub fn get_ramp(&self) -> String {
         match &self.ramp {
             Some(ramp) => ramp.to_string(),
@@ -111,6 +107,4 @@ impl Args {
     pub fn get_drop(&self) -> Option<String> {
         self.drop.to_owned()
     }
-
-
 }

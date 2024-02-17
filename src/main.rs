@@ -1,9 +1,7 @@
 use clap::Parser;
-use image::imageops::FilterType;
-use im2as::{print_image_pixelated, print_image_with_ramp, Args};
+use img2ascii::{print_image_pixelated, print_image_with_ramp, Args};
 
 fn main() {
-
     let args = Args::parse();
     let img_path = args.get_img_path();
     let width = args.get_width();
