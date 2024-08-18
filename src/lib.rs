@@ -32,7 +32,7 @@ impl CharacterRamp {
 }
 
 /// Scale our image up and resize to a fixed width
-fn scale_and_resize_img_fixed_width(
+pub fn scale_and_resize_img_fixed_width(
     img: DynamicImage,
     desired_width: u32,
     filter_type: FilterType,
@@ -68,7 +68,7 @@ fn read_image_to_print(
 ///
 /// * `img` - The image to display
 /// * `pixel_callback` - A callback function that determines what string to print for each pixel
-fn print_image<F>(img: image::DynamicImage, pixel_callback: F) -> ImageResult<()>
+fn print_image<F>(img: &image::DynamicImage, pixel_callback: F) -> ImageResult<()>
 where
     F: Fn(image::Rgba<u8>) -> String,
 {
@@ -88,6 +88,40 @@ where
     }
 
     ImageResult::Ok(())
+}
+
+/// Convert our image to a pixelated string representation.
+///
+/// By default, do not include any character whose alpha channel is 0.
+///
+/// # Arguments
+///
+/// * `img` - The image to display
+/// * `pixel_callback` - A callback function that determines what string to print for each pixel
+pub fn image_to_pixelated_string(img: &image::DynamicImage) -> ImageResult<String> {
+    // Now iterate along the pixels
+    let (width, height) = img.dimensions();
+    let mut img_string: String = String::new();
+
+    let c: char = '\u{2588}';
+    let pixel_callback = |p: image::Rgba<u8>| {
+        let color = pixel_to_color(p);
+        format!("{}", c.color(color).bold())
+    };
+
+    for y in 0..height {
+        for x in 0..width {
+            let pixel = img.get_pixel(x, y);
+            if pixel.0[3] == 0 {
+                img_string.push(' ');
+            } else {
+                img_string.push_str(&pixel_callback(pixel));
+            }
+        }
+        img_string.push('\n');
+    }
+
+    ImageResult::Ok(img_string)
 }
 
 pub fn print_image_with_ramp(
@@ -111,7 +145,7 @@ pub fn print_image_with_ramp(
 
                 format!("{}", c.color(color).bold())
             };
-            print_image(img, pixel_callback)
+            print_image(&img, pixel_callback)
         }
         None => {
             let pixel_callback = |p: image::Rgba<u8>| {
@@ -119,7 +153,7 @@ pub fn print_image_with_ramp(
                 let c = ramp.get_char(p);
                 format!("{}", c.color(color).bold())
             };
-            print_image(img, pixel_callback)
+            print_image(&img, pixel_callback)
         }
     }
 }
@@ -132,6 +166,16 @@ pub fn print_image_pixelated(
     filter_type: FilterType,
 ) -> ImageResult<()> {
     let img = read_image_to_print(img_path, width, contrast, filter_type)?;
+    let c: char = '\u{2588}';
+    let pixel_callback = |p: image::Rgba<u8>| {
+        let color = pixel_to_color(p);
+        format!("{}", c.color(color).bold())
+    };
+
+    print_image(&img, pixel_callback)
+}
+
+pub fn print_dyn_image_pixelated(img: &DynamicImage) -> ImageResult<()> {
     let c: char = '\u{2588}';
     let pixel_callback = |p: image::Rgba<u8>| {
         let color = pixel_to_color(p);
