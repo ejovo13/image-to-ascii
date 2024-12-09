@@ -22,5 +22,10 @@
         nativeBuildInputs = [pkgs.pkg-config];
       };
     };
+
+    app.x86_64-linux.default = {
+      type = "app";
+      program = "${self.packages.x86_64-linux.default}/bin/img2ascii";
+    };
   };
 }
