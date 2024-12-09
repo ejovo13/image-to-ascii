@@ -8,8 +8,6 @@
     self,
     nixpkgs,
   }: let
-    # TODO: Move this elsewhere
-    inherit (nixpkgs.stdenv) mkDerivation;
   in {
     packages.x86_64-linux = {
       default = import ./default.nix {pkgs = nixpkgs;};
