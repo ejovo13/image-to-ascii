@@ -8,12 +8,18 @@
     self,
     nixpkgs,
   }: let
+    pkgs = import nixpkgs {system = "x86_64-linux";};
   in {
     packages.x86_64-linux = {
-      default = import ./default.nix {
-        pkgs = import nixpkgs {
-          system = "x86_64-linux";
+      default = pkgs.rustPlatform.buildRustPackage {
+        pname = "image-to-ascii-rust";
+        version = "0.1.0";
+        src = ./.;
+        cargoLock = {
+          lockFile = ./Cargo.lock;
         };
+
+        nativeBuildInputs = [pkgs.pkg-config];
       };
     };
   };
